@@ -61,11 +61,13 @@
       border: none;
       height: 100%;
       width: 100% !important;
+      padding-left: 10px;
     }
 
     // menu hover
     .submenu-title-noDropdown,
     .el-submenu__title {
+      font-weight: 500;
       &:hover {
         background-color: $menuHover !important;
       }
@@ -88,7 +90,7 @@
 
   .hideSidebar {
     .sidebar-container {
-      width: 54px !important;
+      width: 64px !important;
     }
 
     .main-container {

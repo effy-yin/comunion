@@ -2,12 +2,16 @@
   <div class="navbar">
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
+    <div class="logo">
+      <img src="~@/assets/logo.png" alt="">
+    </div>
     <breadcrumb class="breadcrumb-container" />
 
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+          <!--          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">-->
+          <img src="~@/assets/avatar.png?imageView2/1/w/80/h/80" class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -16,18 +20,17 @@
               Home
             </el-dropdown-item>
           </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
+
           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">Log Out</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+
+    <el-button class="btn-main" round>
+      New Dao
+    </el-button>
   </div>
 </template>
 
@@ -61,11 +64,12 @@ export default {
 
 <style lang="scss" scoped>
 .navbar {
-  height: 50px;
+  height: 80px;
   overflow: hidden;
   position: relative;
   background: #fff;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  padding-top: 20px;
 
   .hamburger-container {
     line-height: 46px;
@@ -79,7 +83,12 @@ export default {
       background: rgba(0, 0, 0, .025)
     }
   }
-
+  .logo {
+    float: left;
+    position: relative;
+    top: 10px;
+    margin: 0 20px;
+  }
   .breadcrumb-container {
     float: left;
   }
@@ -134,6 +143,10 @@ export default {
         }
       }
     }
+  }
+  .btn-main {
+    float: right;
+    margin: 4px 20px 0 0;
   }
 }
 </style>

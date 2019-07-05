@@ -1,0 +1,164 @@
+// register and login
+.main-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 86px;
+  background: #fff;
+  z-index: 999;
+  padding: 30px;
+  border-bottom: 1px solid rgba(55, 64, 89, 0.1);
+  .logo {
+    display: inline-block;
+    width: 110px;
+    height: 30px;
+    background: url(~@/assets/logo.png);
+    float: left;
+    cursor: pointer;
+  }
+  .menu {
+    display: inline-block;
+    float: left;
+    font-size: 20px;
+    font-weight: 500;
+    margin: 4px 0 0 40px;
+    span {
+      margin-right: 20px;
+      cursor: pointer;
+    }
+  }
+  .right-menu {
+    float: right;
+    font-size: 14px;
+    color: rgba(55, 64, 89, 0.8);
+    margin-top: 10px
+  }
+
+}
+.main-content{
+  background-color: #E5E5E5;
+  margin-top: 86px;
+  padding-right: 360px;
+  min-height: 100%;
+}
+.sidebar-right {
+  position: fixed;
+  top: 86px;
+  right: 0;
+  width: 360px;
+  height: 100%;
+  background: #7B88FF;
+}
+
+
+
+.icon {
+  width: 2em;
+  height: 2em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+}
+
+.section-card {
+  position: relative;
+  padding: 30px;
+  color: #374059;
+  .card-tool {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    cursor: pointer;
+  }
+  .card-title {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 40px;
+  }
+  .card-content {
+    position: relative;
+
+  }
+}
+
+
+.section-user-info {
+  display: flex;
+  .user-avatar {
+    width: 64px;
+    height: 64px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+  }
+  .user-meta {
+    margin: 10px 0 0 20px;
+    .user-name {
+      font-weight: 500;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .user-title {
+      font-size: 15px;
+      color: rgba(55, 64, 89, 0.5);
+    }
+  }
+
+}
+
+
+.socials {
+  ul {
+    list-style: none;
+    margin-left: -40px;
+    li {
+      float: left;
+      display: inline-block;
+      margin-right: 10px;
+    }
+  }
+}
+.btn-main {
+  color: #fff;
+  background: linear-gradient(270deg, #7B87FF 0%, #606FFF 100%);
+  box-shadow: 0px 2px 10px rgba(123, 136, 255, 0.5);
+}
+.el-button.is-plain.btn-link {
+  color: #4987FF;
+  border-color: #4987FF;
+  background: rgba(73, 135, 255, 0.1);
+  &:hover, &:focus {
+    background: rgba(73, 135, 255, 0.15);
+  }
+}
+.el-button.is-plain.btn-tag {
+  color: #7B88FF;
+  background: rgba(123, 136, 255, 0.1);
+  border: 0;
+  &:hover, &:active {
+    color: #7B88FF;
+    background: rgba(123, 136, 255, 0.1);
+  }
+  &.disable {
+    color: rgba(55, 64, 89, 0.7);
+    background: #fff;
+  }
+}
+// element-ui 组件样式覆盖
+.el-input.fake {
+  font-weight: 500;
+  &.textarea {
+    line-height: 1.5;
+  }
+}
+.el-form-item__label {
+  color: rgba(55, 64, 89, 0.5);
+}
+el-dialog__header, el-dialog__body, el-dialog__footer {
+  padding-left: 30px;
+  padding-right: 30px;
+}
