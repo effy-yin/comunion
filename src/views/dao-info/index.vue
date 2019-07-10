@@ -18,6 +18,9 @@
           <el-form-item label="Contract">
             <div class="el-input fake">
               <el-button class="btn-link" plain round>
+                <svg class="icon" aria-hidden="true" style="width:1em;height:1em;">
+                  <xlink:href="#icon-link" />
+                </svg>
                 {{ form.contract }}
               </el-button>
             </div>
@@ -31,7 +34,7 @@
             <use xlink:href="#icon-edit" />
           </svg>
           <svg v-else class="icon" aria-hidden="true" @click="isAboutInEdit=false">
-            <use xlink:href="#icon-vote" />
+            <use xlink:href="#icon-check" />
           </svg>
         </div>
         <div class="card-title">About</div>
@@ -54,7 +57,7 @@
             <use xlink:href="#icon-edit" />
           </svg>
           <svg v-else class="icon" aria-hidden="true" @click="isContactInEdit=false">
-            <use xlink:href="#icon-vote" />
+            <use xlink:href="#icon-check" />
           </svg>
         </div>
         <div class="card-title">Contact</div>

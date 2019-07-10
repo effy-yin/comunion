@@ -9,25 +9,28 @@
         Wallet
       </el-button>
     </div>
-    <el-form ref="form" :model="form" label-width="80px">
+    <el-form ref="form" :model="form">
       <div v-show="curTab==='account'" class="section-card">
+        <div class="card-tool">
+          <svg v-if="!isInEdit" class="icon" aria-hidden="true" @click="isInEdit=true">
+            <use xlink:href="#icon-edit" />
+          </svg>
+          <svg v-else class="icon" aria-hidden="true" @click="isInEdit=false">
+            <use xlink:href="#icon-check" />
+          </svg>
+        </div>
         <div class="card-title">Personal Information</div>
         <div class="card-content">
           <el-form-item label="Profile Photo">
             <el-input v-model="form.name" />
           </el-form-item>
-          <el-form-item label="Wallet Address">
-            <el-input v-model="form.wallet" />
+          <el-form-item label="User Name">
+            <el-input v-model="form.name" />
           </el-form-item>
           <el-form-item label="email">
-            <el-input v-model="form.email" />
+            <div class="el-input fake">{{ form.email }}</div>
           </el-form-item>
-          <el-form-item label="role">
-            <el-input v-model="form.role" />
-          </el-form-item>
-          <el-form-item label="Description">
-            <el-input v-model="form.description" />
-          </el-form-item>
+
           <el-form-item label="Social Media">
             <el-input v-model="form.socials" />
           </el-form-item>
@@ -45,7 +48,7 @@
           </div>
 
           <div class="section-user-info">
-            <svg class="icon" aria-hidden="true" @click="handleAddAddress">
+            <svg class="icon" aria-hidden="true" @click="handleEditAddress">
               <use xlink:href="#icon-edit" />
             </svg>
             <div class="user-avatar"><img src="~@/assets/btc.png" alt=""></div>
@@ -55,7 +58,7 @@
             </div>
           </div>
           <div class="section-user-info">
-            <svg class="icon" aria-hidden="true" @click="handleAddAddress">
+            <svg class="icon" aria-hidden="true" @click="handleEditAddress">
               <use xlink:href="#icon-edit" />
             </svg>
             <div class="user-avatar"><img src="~@/assets/eth.png" alt=""></div>
@@ -68,12 +71,12 @@
       </div>
     </el-form>
 
-    <dialog-add-address ref="dialog" />
+    <dialog-add-address ref="dialogWallet" />
   </div>
 </template>
 
 <script>
-import DialogAddAddress from './dialog-add-address'
+import DialogAddAddress from './dialog-add-update-address'
 export default {
   name: 'Profile',
   components: {
@@ -82,53 +85,71 @@ export default {
   data() {
     return {
       form: {
-
+        name: 'doddoroy',
+        email: 'dodo@gmail.com',
+        tags: 'UI,designer',
+        socials: 'facebook,twitter',
+        wallet: [{
+          name: 'BTC',
+          address: 'sdf',
+          usage: '34'
+        }, {
+          name: 'ETH',
+          address: 'sddf',
+          usage: '1134'
+        }]
       },
       curTab: 'account',
-      visible: false
+      visible: false,
+      isInEdit: false
     }
   },
   methods: {
     handleAddAddress() {
-      this.$refs.dialog.init(true)
+      console.log('add')
+      this.$refs.dialogWallet.init(true, true, null)
+    },
+    handleEditAddress() {
+      console.log('edit')
+      this.$refs.dialogWallet.init(true, false, this.form.wallet[0])
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.profile {
-  padding: 30px;
-  .tab-row {
-    margin-bottom: 20px;
-    .title {
-      display: inline-block;
-      font-size: 24px;
-      font-weight: 500;
+  .profile {
+    padding: 30px;
+    .tab-row {
+      margin-bottom: 20px;
+      .title {
+        display: inline-block;
+        font-size: 24px;
+        font-weight: 500;
+        position: relative;
+        top: 6px;
+        margin-right: 30px;
+      }
+    }
+    .wallet-card-title {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      .ratio {
+        font-size: 24px;
+        font-weight: 500;
+      }
+    }
+    .section-user-info {
       position: relative;
-      top: 6px;
-      margin-right: 30px;
+      padding: 30px 0;
+      border-top: 1px solid rgba(55, 64, 89, 0.1);
+      .icon {
+        position: absolute;
+        top: 30px;
+        right: 10px;
+        cursor: pointer;
+      }
     }
   }
-  .wallet-card-title {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 30px;
-    .ratio {
-      font-size: 24px;
-      font-weight: 500;
-    }
-  }
-  .section-user-info {
-    position: relative;
-    padding: 30px 0;
-    border-top: 1px solid rgba(55, 64, 89, 0.1);
-    .icon {
-      position: absolute;
-      top: 30px;
-      right: 10px;
-      cursor: pointer;
-    }
-  }
-}
 </style>

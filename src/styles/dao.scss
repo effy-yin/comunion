@@ -1,3 +1,11 @@
+// for iconfont
+.icon {
+  width: 2em;
+  height: 2em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+}
+
 // register and login
 .main-header {
   position: fixed;
@@ -37,7 +45,7 @@
 
 }
 .main-content{
-  background-color: #E5E5E5;
+  background-color: $mainBg;
   margin-top: 86px;
   padding-right: 360px;
   min-height: 100%;
@@ -53,14 +61,7 @@
 
 
 
-.icon {
-  width: 2em;
-  height: 2em;
-  vertical-align: -0.15em;
-  fill: currentColor;
-  overflow: hidden;
-}
-
+// main card
 .section-card {
   position: relative;
   padding: 30px;
@@ -161,4 +162,29 @@
 el-dialog__header, el-dialog__body, el-dialog__footer {
   padding-left: 30px;
   padding-right: 30px;
+}
+
+
+.inner-content {
+  position: relative;
+  width: 552px;
+  max-width: 100%;
+  padding: 160px 35px 0;
+  margin: 0 auto;
+  overflow: hidden;
+  font-style: 12px;
+  color: rgba(55, 64, 89, 0.7);
+  line-height: 18px;
+  text-align: center;
+  .tip {
+    color: rgba(55, 64, 89, 0.4);
+  }
+  a.tip {
+    color: rgba(55, 64, 89, 0.7);
+  }
+}
+
+
+.main-content {
+  background-color: $mainBg;
 }

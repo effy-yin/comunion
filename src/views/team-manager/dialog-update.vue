@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     title="Edit Memberships"
-    :visible.sync="visible"
+    :visible.sync="dialogVisible"
     width="40%"
     :before-close="handleClose()"
   >
@@ -10,33 +10,37 @@
       <el-form-item label="Profile Photo">
         <el-input v-model="form.name" />
       </el-form-item>
-      <el-form-item label="Wallet Address">
-        <el-input v-model="form.wallet" />
-      </el-form-item>
       <el-form-item label="email">
-        <el-input v-model="form.email" />
+        <div class="el-input fake">{{ form.name }}</div>
       </el-form-item>
-      <el-form-item label="role">
+      <el-form-item label="Wallet Address">
+        <div class="el-input fake">{{ form.wallet }}</div>
+      </el-form-item>
+
+      <el-form-item label="Social Media">
+        <el-input v-model="form.socials" />
+      </el-form-item>
+
+      <el-form-item label="Role">
         <el-input v-model="form.role" />
       </el-form-item>
       <el-form-item label="Description">
-        <el-input v-model="form.description" />
-      </el-form-item>
-      <el-form-item label="Social Media">
-        <el-input v-model="form.socials" />
+        <el-input v-model="form.description" type="textarea" />
       </el-form-item>
 
     </el-form>
 
     <span slot="footer" class="dialog-footer">
-      <el-button class="btn-main" round @click="visible = false">Save</el-button>
+      <el-button class="btn-main" round @click="dialogVisible = false">Save</el-button>
     </span>
   </el-dialog>
 </template>
 
 <script>
 export default {
-  props: ['visible'],
+  props: {
+    'visible': Boolean
+  },
   data() {
     return {
       form: {
@@ -48,11 +52,13 @@ export default {
         description: '',
         socials: ''
 
-      }
+      },
+      dialogVisible: false
     }
   },
   methods: {
     init(user) {
+      this.dialogVisible = this.visible
       this.form.name = user.name
       this.form.wallet = user.wallet
       this.form.email = user.email

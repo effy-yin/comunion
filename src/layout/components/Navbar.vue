@@ -15,9 +15,13 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <router-link to="/">
+          <el-dropdown-item @click.native="dialogVisible=true">
+            Please Log in First
+          </el-dropdown-item>
+
+          <router-link to="/profile">
             <el-dropdown-item>
-              Home
+              Profile
             </el-dropdown-item>
           </router-link>
 
@@ -31,6 +35,22 @@
     <el-button class="btn-main" round>
       New Dao
     </el-button>
+
+    <el-dialog
+      title="Please Input Your Email "
+      :visible.sync="dialogVisible"
+      width="30%"
+    >
+      <el-form ref="form" :model="form">
+        <el-form-item label="Email">
+          <el-input v-model="form.email" />
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogVisible = false">Next</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -43,6 +63,14 @@ export default {
   components: {
     Breadcrumb,
     Hamburger
+  },
+  data() {
+    return {
+      form: {
+        email: ''
+      },
+      dialogVisible: false
+    }
   },
   computed: {
     ...mapGetters([

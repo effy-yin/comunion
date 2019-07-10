@@ -41,7 +41,16 @@ export const constantRoutes = [
     component: () => import('@/views/register/index'),
     hidden: true
   },
-
+  {
+    path: '/organization',
+    component: () => import('@/views/organization/index'),
+    hidden: true
+  },
+  {
+    path: '/organization/list',
+    component: () => import('@/views/organization/list'),
+    hidden: true
+  },
   {
     path: '/404',
     component: () => import('@/views/404'),
@@ -71,20 +80,23 @@ export const constantRoutes = [
   },
   {
     path: '/team-manager',
-    redirect: '/team-manager/index',
     component: Layout,
-
     children: [{
-      path: 'index',
+      path: '',
       name: 'team-manager',
       alwaysShow: true,
       component: () => import('@/views/team-manager/index'),
       meta: { title: 'Team Manager', icon: 'dashboard' }
-    }, {
-      path: 'profile',
+    }]
+  },
+  {
+    path: '/profile',
+    component: Layout,
+    children: [{
+      path: '',
       name: 'profile',
       hidden: true,
-      component: () => import('@/views/team-manager/profile'),
+      component: () => import('@/views/profile/index'),
       meta: { title: 'Profile', icon: 'dashboard' }
     }]
   },
@@ -93,7 +105,7 @@ export const constantRoutes = [
     component: Layout,
     children: [{
       path: '',
-      name: 'Dashboard',
+      name: 'Finance',
       component: () => import('@/views/dashboard/index'),
       meta: { title: 'Finance', icon: 'dashboard' }
     }]
@@ -103,7 +115,7 @@ export const constantRoutes = [
     component: Layout,
     children: [{
       path: '',
-      name: 'Dashboard',
+      name: 'Voting',
       component: () => import('@/views/dashboard/index'),
       meta: { title: 'Voting', icon: 'dashboard' }
     }]
@@ -113,7 +125,7 @@ export const constantRoutes = [
     component: Layout,
     children: [{
       path: '',
-      name: 'Dashboard',
+      name: 'Setting',
       component: () => import('@/views/dashboard/index'),
       meta: { title: 'Settings', icon: 'dashboard' }
     }]

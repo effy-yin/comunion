@@ -1,15 +1,6 @@
 <template>
   <div class="login-container">
-    <div class="main-header">
-      <span class="logo" />
-      <div class="menu">
-        <span>Home</span>
-        <span class="">Organization</span>
-      </div>
-      <div class="right-menu">
-        Ethiereum Mainnet
-      </div>
-    </div>
+    <main-header />
 
     <div class="sidebar-right">
       comunion
@@ -66,15 +57,16 @@
 
       </el-form>
     </div>
-
   </div>
 </template>
 
 <script>
+import mainHeader from '@/layout-main/main-header'
 import { validUsername } from '@/utils/validate'
 
 export default {
   name: 'Login',
+  components: { mainHeader },
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
@@ -101,7 +93,8 @@ export default {
       },
       loading: false,
       passwordType: 'password',
-      redirect: undefined
+      redirect: undefined,
+      form: ''
     }
   },
   watch: {
@@ -158,7 +151,7 @@ $cursor: #fff;
 }
 
 /* reset element-ui css */
-.login-container {
+.login-container .login-form{
   .el-input {
     display: inline-block;
     height: 47px;
@@ -198,7 +191,6 @@ $light_gray:#eee;
 .login-container {
   min-height: 100%;
   width: 100%;
-  background-color: #E5E5E5; //$bg
   overflow: hidden;
 
   .login-form {
@@ -251,5 +243,6 @@ $light_gray:#eee;
     cursor: pointer;
     user-select: none;
   }
+
 }
 </style>

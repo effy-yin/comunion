@@ -17,11 +17,12 @@
 
           <div slot="header" class="clearfix">
 
-            <el-button style="float: right; padding: 3px 0" type="text" @click="showDialog(user)">
-              <svg class="icon" aria-hidden="true">
-                <use xlink:href="#icon-edit" />
-              </svg>
-            </el-button>
+            <svg class="icon" aria-hidden="true" style="float: right; padding: 3px 0" type="text" @click="showDialog(user)">
+              <use xlink:href="#icon-edit" />
+            </svg>
+            <svg class="icon" aria-hidden="true" style="float: right; padding: 3px 0" type="text" @click="showDialog(user)">
+              <use xlink:href="#icon-delete" />
+            </svg>
 
             <div class="section-user-info">
               <div class="user-avatar"><img src="~@/assets/avatar.png" alt=""></div>
@@ -68,13 +69,31 @@
 
     </el-form>
 
-    <add-update-dialog ref="userDialog" :visible="isInEdit" />
+    <add-update-dialog ref="editDialog" :visible="isInEdit" />
+
+    <el-dialog
+      ref="addDialog"
+      title="Add Members"
+      :visible.sync="isDialogAddVisible"
+      width="30%"
+      :before-close="handleClose"
+    >
+      <el-input
+        v-model="searchEmail"
+        placeholder="请输入内容"
+        prefix-icon="el-icon-search"
+      />
+
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="isDialogAddVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import AddUpdateDialog from './add-update-dialog'
+import AddUpdateDialog from './dialog-update'
 
 export default {
   components: { AddUpdateDialog },
@@ -141,7 +160,9 @@ export default {
         name: 's'
       },
       query: '',
-      isInEdit: false
+      isInEdit: false,
+      isDialogAddVisible: false,
+      searchEmail: ''
     }
   },
   computed: {
@@ -152,10 +173,14 @@ export default {
   methods: {
     showDialog(user) {
       this.isInEdit = true
-      this.$refs.userDialog.init(user)
+      this.$refs.editDialog.init(user)
     },
     handleAddClick() {
-      this.$router.push('/team-manager/profile')
+      // this.$router.push('/team-manager/profile')
+      this.isDialogAddVisible = true
+    },
+    handleClose() {
+      this.isDialogAddVisible = false
     }
   }
 }

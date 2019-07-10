@@ -1,20 +1,20 @@
 <template>
   <el-dialog
-    title="Add Address"
+    :title="add?'Add Address':'Edit Address'"
     :visible.sync="show"
     width="40%"
-    :before-close="handleClose()"
+    :before-close="handleClose"
   >
-    <el-form ref="form" :model="form">
+    <el-form ref="walletForm" :model="form">
 
       <el-form-item label="Select Currency">
         <el-input v-model="form.name" />
       </el-form-item>
       <el-form-item label="Wallet Address">
-        <el-input v-model="form.wallet" />
+        <el-input v-model="form.address" />
       </el-form-item>
       <el-form-item label="Usage">
-        <el-input v-model="form.email" />
+        <el-input v-model="form.usage" />
       </el-form-item>
     </el-form>
 
@@ -26,24 +26,36 @@
 
 <script>
 export default {
-  props: ['visible'],
   data() {
     return {
+      add: true,
       form: {
-        id: '',
-        name: 'BTH',
-        wallet: '',
+        name: '',
+        address: '',
         usage: ''
       },
       show: false
     }
   },
   methods: {
-    init(show) {
+    init(show, add, wallet) {
       this.show = show
+      this.add = add
+      if (wallet) {
+        console.log('wallet', wallet)
+        this.form.name = wallet.name
+        this.form.address = wallet.address
+        this.form.usage = wallet.usage
+      } else {
+        console.log(this.$refs.form)
+        // this.$refs.walletForm.resetFields()
+        this.form.name = ''
+        this.form.address = ''
+        this.form.usage = ''
+      }
     },
     handleClose() {
-      console.log('1')
+      this.show = false
     }
   }
 
