@@ -2,9 +2,7 @@
   <div class="login-container">
     <main-header />
 
-    <div class="sidebar-right">
-      comunion
-    </div>
+    <div class="sidebar-right" />
 
     <div class="main-content">
       <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
@@ -61,7 +59,7 @@
 </template>
 
 <script>
-import mainHeader from '@/layout-main/main-header'
+import mainHeader from '@/components/main-header'
 import { validUsername } from '@/utils/validate'
 
 export default {
@@ -192,6 +190,7 @@ $light_gray:#eee;
   min-height: 100%;
   width: 100%;
   overflow: hidden;
+  background: #f5f6fa;
 
   .login-form {
     position: relative;
@@ -245,4 +244,7 @@ $light_gray:#eee;
   }
 
 }
+  .login-container .sidebar-right {
+    background-image: url(~@/assets/right-banner1.png);
+  }
 </style>

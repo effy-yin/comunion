@@ -1,6 +1,17 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">name: {{ name }}</div>
+    <div class="dashboard-text" />
+
+    <el-upload
+      class="upload-demo"
+      action="/comunion-api/a/upload"
+      name="upload"
+      multiple
+      :limit="3"
+    >
+      <el-button size="small" type="primary">点击上传</el-button>
+      <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+    </el-upload>
   </div>
 </template>
 
@@ -13,6 +24,14 @@ export default {
     ...mapGetters([
       'name'
     ])
+  },
+  methods: {
+    handleFileChange() {
+      console.log(1)
+    },
+    handleFileRemove() {
+      console.log(2)
+    }
   }
 }
 </script>

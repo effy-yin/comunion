@@ -11,46 +11,80 @@
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <!--          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">-->
-          <img src="~@/assets/avatar.png?imageView2/1/w/80/h/80" class="user-avatar">
+          <img v-if="token" src="~@/assets/avatar.png?imageView2/1/w/80/h/80" class="user-avatar">
+          <img v-else src="~@/assets/avatar-default.png" class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <el-dropdown-item @click.native="dialogVisible=true">
-            Please Log in First
-          </el-dropdown-item>
-
-          <router-link to="/profile">
-            <el-dropdown-item>
-              Profile
+          <template v-if="!token">
+            <el-dropdown-item @click.native="isDialogVisible=true;curType='login'">
+              Please Log in First
             </el-dropdown-item>
-          </router-link>
+            <el-dropdown-item @click.native="isDialogVisible=true;curType='register'">
+              Register
+            </el-dropdown-item>
+          </template>
+          <template v-else>
+            <router-link to="/dao/profile">
+              <el-dropdown-item>
+                Profile
+              </el-dropdown-item>
+            </router-link>
 
-          <el-dropdown-item divided>
-            <span style="display:block;" @click="logout">Log Out</span>
-          </el-dropdown-item>
+            <el-dropdown-item divided>
+              <span style="display:block;" @click="logout">Log Out</span>
+            </el-dropdown-item>
+          </template>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
 
-    <el-button class="btn-main" round>
-      New Dao
-    </el-button>
+    <router-link to="/home">
+      <el-button class="btn-main new-dao-btn" round>
+        New Dao
+      </el-button>
+    </router-link>
 
     <el-dialog
-      title="Please Input Your Email "
-      :visible.sync="dialogVisible"
-      width="30%"
+      :title="type[curType]"
+      :visible.sync="isDialogVisible"
+      width="500px"
     >
-      <el-form ref="form" :model="form">
+      <el-form v-show="curType==='login'" ref="loginForm" :model="loginForm">
         <el-form-item label="Email">
-          <el-input v-model="form.email" />
+          <el-input v-model="loginForm.email" placeholder="Please input your email" />
+        </el-form-item>
+        <el-form-item label="Password">
+          <el-input v-model="loginForm.password" type="password" placeholder="Please input your password" />
         </el-form-item>
       </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogVisible = false">Next</el-button>
-      </span>
-    </el-dialog>
 
+      <el-form v-show="curType==='register'||curType==='reset'" ref="registerForm" :model="registerForm">
+        <el-form-item label="Email">
+          <el-input v-model="registerForm.email" placeholder="Please input your email" />
+        </el-form-item>
+        <el-form-item label="code" class="code">
+
+          <el-input v-model="registerForm.code" placeholder="Please input verification code" />
+          <el-button type="primary btn-main" round @click="handleSendCode">Send Verificatiob Code</el-button>
+
+        </el-form-item>
+        <el-form-item label="Password">
+          <el-input v-model="registerForm.password" type="password" placeholder="Please input your password" />
+        </el-form-item>
+      </el-form>
+
+      <div v-show="curType==='login'" slot="footer" class="dialog-footer">
+        <span @click="curType='reset'">forget password</span>
+        <el-button type="primary btn-main" round @click="handleLogin">Log in</el-button>
+      </div>
+      <div v-show="curType==='register'" slot="footer" class="dialog-footer">
+        <el-button type="primary btn-main" round @click="handleLogin">Register</el-button>
+      </div>
+      <div v-show="curType==='reset'" slot="footer" class="dialog-footer">
+        <el-button type="primary btn-main" round @click="handleLogin">Reset Password</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -58,6 +92,7 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import { userRegister, sendVeriCode } from '@/api/user'
 
 export default {
   components: {
@@ -66,17 +101,44 @@ export default {
   },
   data() {
     return {
-      form: {
-        email: ''
+      loginForm: {
+        email: '',
+        password: ''
       },
-      dialogVisible: false
+      registerForm: {
+        email: '',
+        code: '',
+        password: '',
+        afterSave: 'sendPsdEmail'
+      },
+      // resetForm: {
+      //   email: '',
+      //   code: '',
+      //   password: '',
+      //   afterSave: 'sendPsdEmail'
+      // },
+      isDialogVisible: false,
+      type: {
+        login: 'Please Login',
+        register: 'Please Register',
+        reset: 'Reset Password'
+      },
+      curType: 'login'
     }
   },
   computed: {
     ...mapGetters([
+      'token',
       'sidebar',
-      'avatar'
+      'userInfo'
     ])
+  },
+  created() {
+    if (!this.userInfo._id) {
+      if (this.token) {
+        this.$store.dispatch('user/getInfo')
+      }
+    }
   },
   methods: {
     toggleSideBar() {
@@ -84,13 +146,40 @@ export default {
     },
     async logout() {
       await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      // this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    handleLogin() {
+      console.log(1, this.loginForm)
+      this.$store.dispatch('user/login', this.loginForm).then(data => {
+        console.log(data)
+        if (data === 'success') {
+          this.logInDialogVisible = false
+        } else {
+          this.$notify({
+            message: data,
+            type: 'warning'
+          })
+        }
+      })
+    },
+    handleRegister() {
+      userRegister(this.registerForm).then(res => {
+        if (!res.err && res.entities) {
+          console.log(44, res)
+          this.orgList = res.entities
+        }
+      })
+    },
+    handleSendCode() {
+      sendVeriCode({ email: this.registerForm.email }).then(res => {
+        console.log(res)
+      })
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .navbar {
   height: 80px;
   overflow: hidden;
@@ -172,9 +261,23 @@ export default {
       }
     }
   }
-  .btn-main {
+  .new-dao-btn {
     float: right;
     margin: 4px 20px 0 0;
+  }
+  .dialog-footer {
+    height: 40px;
+  }
+  .el-form-item {
+    margin-bottom: 0;
+  }
+  .code {
+    .el-form-item__label {
+      float: none;
+    }
+    .el-input {
+      width: 254px;
+    }
   }
 }
 </style>

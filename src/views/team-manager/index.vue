@@ -10,17 +10,17 @@
       </el-input>
     </div>
 
-    <el-form ref="form" :model="form">
+    <el-form v-if="orgForm.members.length > 0" ref="form">
       <div class="card-wrapper">
 
-        <el-card v-for="user in userList" :key="user.id" class="box-card">
+        <el-card v-for="user in orgForm.members" :key="user.id" class="box-card">
 
           <div slot="header" class="clearfix">
 
-            <svg class="icon" aria-hidden="true" style="float: right; padding: 3px 0" type="text" @click="showDialog(user)">
+            <svg class="icon tool" aria-hidden="true" type="text" @click="showEditDialog(user)">
               <use xlink:href="#icon-edit" />
             </svg>
-            <svg class="icon" aria-hidden="true" style="float: right; padding: 3px 0" type="text" @click="showDialog(user)">
+            <svg class="icon tool" aria-hidden="true" type="text" @click="handleDelete(user)">
               <use xlink:href="#icon-delete" />
             </svg>
 
@@ -43,7 +43,7 @@
               <div class="el-input fake">{{ user.email }}</div>
             </el-form-item>
             <el-form-item label="Wallet Address">
-              <div class="el-input fake">{{ user.wallet }}</div>
+              <div class="el-input fake">{{ user&&user.wallet&&user.wallet.address?user.wallet.address:'' }}</div>
             </el-form-item>
             <div class="socials el-input fake">
               <ul>
@@ -69,29 +69,87 @@
 
     </el-form>
 
-    <add-update-dialog ref="editDialog" :visible="isInEdit" />
+    <div class="no-member">
+      Click Add Menber to add members
+    </div>
+
+    <add-update-dialog ref="editDialog" :user="curUser" :visible="isDialogEditVisible" />
 
     <el-dialog
       ref="addDialog"
       title="Add Members"
       :visible.sync="isDialogAddVisible"
-      width="30%"
+      width="500px"
       :before-close="handleClose"
     >
-      <el-input
-        v-model="searchEmail"
-        placeholder="请输入内容"
-        prefix-icon="el-icon-search"
-      />
+      <div>
+        <el-input
+          v-model="searchEmail"
+          class="search-email-input"
+          placeholder="Enter a member's email address"
+          prefix-icon="el-icon-search"
+        /><el-button type="primary btn-main" round @click="handleUserSearch">Search</el-button>
+      </div>
 
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="isDialogAddVisible = false">确 定</el-button>
-      </span>
+      <!--      <span slot="footer" class="dialog-footer">-->
+      <!--        <el-button type="primary btn-main" round @click="handleUserSearch">Search</el-button>-->
+      <!--      </span>-->
+
+      <div v-show="isUserExist" class="search-result">
+        <el-form ref="form" :model="searchUser">
+          <el-card class="box-card">
+
+            <div slot="header" class="clearfix">
+
+              <div class="section-user-info">
+                <div class="user-avatar"><img src="~@/assets/avatar.png" alt=""></div>
+                <div class="user-meta">
+                  <div class="user-name">{{ searchUser&&searchUser.name?searchUser.name :'' }}</div>
+                  <div class="user-title">{{ searchUser&&searchUser.title?searchUser.title:'' }}</div>
+                </div>
+              </div>
+              <div class="tag-row">
+                <el-tag type="success">UI</el-tag>
+                <el-tag type="success">UI</el-tag>
+                <el-tag type="success">UI</el-tag>
+              </div>
+
+            </div>
+            <div>
+              <el-form-item label="E-Mail">
+                <div class="el-input fake">{{ searchUser&& searchUser.email?searchUser.email:'' }}</div>
+              </el-form-item>
+              <el-form-item label="Wallet Address">
+                <div class="el-input fake">{{ searchUser&&searchUser.address?searchUser.address:'' }}</div>
+              </el-form-item>
+              <div class="socials el-input fake">
+                <ul>
+                  <li><svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-twitter" />
+                  </svg></li>
+                  <li><svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-instagram" />
+                  </svg></li>
+                  <li><svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-facebook" />
+                  </svg></li>
+                  <li><svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-youtube" />
+                  </svg></li>
+                </ul>
+              </div>
+            </div>
+          </el-card>
+        </el-form>
+        <el-button type="primary btn-main" round @click="handleAddMember">Add</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
+import { getOrgInfo, updateOrgInfo, checkOrgEmail } from '@/api/organization'
+import { getUserInfoByEmail } from '@/api/user'
 import { mapGetters } from 'vuex'
 import AddUpdateDialog from './dialog-update'
 
@@ -99,81 +157,70 @@ export default {
   components: { AddUpdateDialog },
   data() {
     return {
-      userList: [{
-        id: 1,
-        name: 'Robert Caroll',
-        title: 'UI Designer',
-        tags: 'UI,Web UX,UE,iOS',
-        email: 'effy@gmail.com',
-        wallet: '238dha87fhz9a09ildhahihhkzhe',
-        socials: ''
-      }, {
-        id: 2,
-        name: 'Robert Caroll',
-        title: 'UI Designer',
-        tags: 'UI,Web UX,UE,iOS',
-        email: 'effy@gmail.com',
-        wallet: '238dha87fhz9a09ildhahihhkzhe',
-        socials: ''
-      }, {
-        id: 3,
-        name: 'Robert Caroll',
-        title: 'UI Designer',
-        tags: 'UI,Web UX,UE,iOS',
-        email: 'effy@gmail.com',
-        wallet: '238dha87fhz9a09ildhahihhkzhe',
-        socials: ''
-      }, {
-        id: 4,
-        name: 'Robert Caroll',
-        title: 'UI Designer',
-        tags: 'UI,Web UX,UE,iOS',
-        email: 'effy@gmail.com',
-        wallet: '238dha87fhz9a09ildhahihhkzhe',
-        socials: ''
-      }, {
-        id: 5,
-        name: 'Robert Caroll',
-        title: 'UI Designer',
-        tags: 'UI,Web UX,UE,iOS',
-        email: 'effy@gmail.com',
-        wallet: '238dha87fhz9a09ildhahihhkzhe',
-        socials: ''
-      }, {
-        id: 6,
-        name: 'Robert Caroll',
-        title: 'UI Designer',
-        tags: 'UI,Web UX,UE,iOS',
-        email: 'effy@gmail.com',
-        wallet: '238dha87fhz9a09ildhahihhkzhe',
-        socials: ''
-      }, {
-        id: 7,
-        name: 'Robert Caroll',
-        title: 'UI Designer',
-        tags: 'UI,Web UX,UE,iOS',
-        email: 'effy@gmail.com',
-        wallet: '238dha87fhz9a09ildhahihhkzhe',
-        socials: ''
-      }],
-      form: {
-        name: 's'
-      },
+      // userList: [],
       query: '',
-      isInEdit: false,
+      isDialogEditVisible: false,
       isDialogAddVisible: false,
-      searchEmail: ''
+      searchEmail: '',
+      searchUser: null,
+      isUserExist: false,
+      curUser: null
     }
   },
   computed: {
     ...mapGetters([
-      'name'
+      'orgForm'
     ])
   },
+  created() {
+    this.getOrgInfo()
+  },
   methods: {
-    showDialog(user) {
-      this.isInEdit = true
+    getOrgInfo() {
+      const id = this.$route.query.id
+      if (id) {
+        this.$store.dispatch('organization/getOrgInfo', id)
+      } else {
+        if (!this.orgForm._id) {
+          this.$notify({
+            message: 'Please select an organization to continue!',
+            type: 'warning'
+          })
+        }
+      }
+    },
+    handleUserSearch() {
+      // this.isDialogAddVisible = false
+      getUserInfoByEmail(this.searchEmail).then(res => {
+        console.log(res)
+        if (res.entity) {
+          this.isUserExist = true
+          this.searchUser = res.entity
+        } else {
+          this.isUserExist = false
+        }
+      })
+    },
+    handleAddMember() {
+      this.$store.dispatch('organization/addOrgMember', this.searchUser).then(res=>{
+        console.log(res)
+        if (res === 'success') {
+          this.isDialogAddVisible = false
+        } else {
+          this.$notify({
+            message: res,
+            type: 'warning'
+          })
+        }
+      })
+
+    },
+    showEditDialog(user) {
+      this.isDialogEditVisible = true
       this.$refs.editDialog.init(user)
+    },
+    handleDelete(user) {
+      alert('de')
     },
     handleAddClick() {
       // this.$router.push('/team-manager/profile')
@@ -202,15 +249,41 @@ export default {
       flex-wrap: wrap;
       justify-content: space-around;
     }
+
+    .search-email-input {
+      width: 74%;
+      margin-right: 20px;
+    }
+
+    .no-member {
+      text-align: center;
+      color: #45588C;
+      margin-top: calc(20%);
+    }
+    .icon.tool {
+      float: right; padding: 3px 0;
+      cursor: pointer;
+    }
+    .box-card {
+      color: #374059;
+      width: 346px;
+      margin-bottom: 30px;
+      &.fake {
+        visibility: hidden;
+      }
+    }
+
+    .search-result {
+      margin-top: 20px;
+      .box-card {
+        margin: 0 auto
+      }
+      .btn-main {
+        position: relative;
+        left: calc(50% - 26px);
+        margin-top: 20px;
+      }
+    }
   }
 
-.box-card {
-  color: #374059;
-  width: 346px;
-  margin-bottom: 30px;
-  &.fake {
-    visibility: hidden;
-  }
-
-}
 </style>

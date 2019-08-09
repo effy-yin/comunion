@@ -1,8 +1,8 @@
 {
-  "name": "vue-admin-template",
+  "name": "comunion-admin",
   "version": "4.2.1",
-  "description": "A vue admin template with Element UI & axios & iconfont & permission control & lint",
-  "author": "Pan <panfree23@gmail.com>",
+  "description": "Administration for Comunion",
+  "author": "Effy",
   "license": "MIT",
   "scripts": {
     "dev": "vue-cli-service serve",
@@ -17,13 +17,18 @@
   "dependencies": {
     "axios": "0.18.1",
     "element-ui": "2.7.2",
+    "ethjs": "^0.4.0",
+    "ethjs-contract": "^0.2.3",
+    "ethjs-query": "^0.3.8",
     "js-cookie": "2.2.0",
+    "lodash": "^4.17.15",
     "normalize.css": "7.0.0",
     "nprogress": "0.2.0",
     "path-to-regexp": "2.4.0",
     "vue": "2.6.10",
     "vue-router": "3.0.6",
-    "vuex": "3.1.0"
+    "vuex": "3.1.0",
+    "web3": "^1.0.0-beta.55"
   },
   "devDependencies": {
     "@babel/core": "7.0.0",

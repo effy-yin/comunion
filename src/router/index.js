@@ -31,66 +31,72 @@ import Layout from '@/layout'
  * all roles can be accessed
  */
 export const constantRoutes = [
-  {
-    path: '/login',
-    component: () => import('@/views/login/index'),
-    hidden: true
-  },
-  {
-    path: '/register',
-    component: () => import('@/views/register/index'),
-    hidden: true
-  },
-  {
-    path: '/organization',
-    component: () => import('@/views/organization/index'),
-    hidden: true
-  },
-  {
-    path: '/organization/list',
-    component: () => import('@/views/organization/list'),
-    hidden: true
-  },
-  {
-    path: '/404',
-    component: () => import('@/views/404'),
-    hidden: true
-  },
+  // {
+  //   path: '/login',
+  //   component: () => import('@/views/login/index'),
+  //   hidden: true
+  // },
+  // {
+  //   path: '/register',
+  //   component: () => import('@/views/register/index'),
+  //   hidden: true
+  // },
 
   {
     path: '/',
-    component: Layout,
+    component: () => import('@/views/organization/index'),
     redirect: '/home',
+    hidden: true,
+    children: [{
+      path: 'home',
+      component: () => import('@/views/organization/home')
+    }, {
+      path: 'create',
+      component: () => import('@/views/organization/create')
+    }, {
+      path: 'list',
+      component: () => import('@/views/organization/list')
+    }
+    // {
+    //   path: 'search',
+    //   component: () => import('@/views/organization/search')
+    // }
+    ]
+  },
+  {
+    path: '/dao',
+    component: Layout,
+    // redirect: '/dao',
     children: [{
       path: 'home',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Home', icon: 'dashboard' }
+      meta: { title: 'Home', icon: 'home' }
     }]
   },
   {
-    path: '/dao-info',
+    path: '/dao/info',
     component: Layout,
     children: [{
       path: '',
       name: 'dao-info',
       component: () => import('@/views/dao-info/index'),
-      meta: { title: 'DAO Info', icon: 'dashboard' }
+      meta: { title: 'DAO Info', icon: 'info' }
     }]
   },
   {
-    path: '/team-manager',
+    path: '/dao/team-manager',
     component: Layout,
     children: [{
       path: '',
       name: 'team-manager',
       alwaysShow: true,
       component: () => import('@/views/team-manager/index'),
-      meta: { title: 'Team Manager', icon: 'dashboard' }
+      meta: { title: 'Team Manager', icon: 'user' }
     }]
   },
   {
-    path: '/profile',
+    path: '/dao/profile',
     component: Layout,
     children: [{
       path: '',
@@ -101,53 +107,52 @@ export const constantRoutes = [
     }]
   },
   {
-    path: '/finance',
+    path: '/dao/finance',
     component: Layout,
     children: [{
       path: '',
       name: 'Finance',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Finance', icon: 'dashboard' }
+      meta: { title: 'Finance', icon: 'finance' }
     }]
   },
   {
-    path: '/voting',
+    path: '/dao/voting',
     component: Layout,
     children: [{
       path: '',
       name: 'Voting',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Voting', icon: 'dashboard' }
+      meta: { title: 'Voting', icon: 'vote' }
     }]
   },
   {
-    path: '/setting',
+    path: '/dao/setting',
     component: Layout,
     children: [{
       path: '',
       name: 'Setting',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Settings', icon: 'dashboard' }
+      meta: { title: 'Settings', icon: 'setting' }
     }]
   },
   {
-    path: '/example',
+    path: '/dao/discovery',
     component: Layout,
-    redirect: '/example/new-organization',
     name: 'Example',
     meta: { title: 'Discovery', icon: 'example' },
     children: [
       {
         path: 'new-organization',
+        redirect: '/create',
         name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'New Organization', icon: 'table' }
+        meta: { title: 'New Organization', icon: 'info' }
       },
       {
         path: 'hot-organization',
+        redirect: '/list',
         name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Hot Organization', icon: 'tree' }
+        meta: { title: 'Hot Organization', icon: 'info' }
       }
     ]
   },
@@ -162,6 +167,11 @@ export const constantRoutes = [
   //   ]
   // },
 
+  {
+    path: '/404',
+    component: () => import('@/views/404'),
+    hidden: true
+  },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

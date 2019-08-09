@@ -1,71 +1,50 @@
-// for iconfont
-.icon {
-  width: 2em;
-  height: 2em;
-  vertical-align: -0.15em;
-  fill: currentColor;
-}
-
-// register and login
-.main-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 86px;
-  background: #fff;
-  z-index: 999;
-  padding: 30px;
-  border-bottom: 1px solid rgba(55, 64, 89, 0.1);
-  .logo {
-    display: inline-block;
-    width: 110px;
-    height: 30px;
-    background: url(~@/assets/logo.png);
-    float: left;
-    cursor: pointer;
-  }
-  .menu {
-    display: inline-block;
-    float: left;
-    font-size: 20px;
-    font-weight: 500;
-    margin: 4px 0 0 40px;
-    span {
-      margin-right: 20px;
-      cursor: pointer;
+/* inner content style for organization home and create module*/
+.inner-content {
+  position: relative;
+  width: 552px;
+  max-width: 100%;
+  padding: 80px 0;
+  margin: 0 auto;
+  overflow: hidden;
+  font-size: 12px;
+  color: rgba(55, 64, 89, 0.7);
+  line-height: 18px;
+  text-align: center;
+  .tip {
+    color: rgba(55, 64, 89, 0.5);
+    margin: 24px;
+    &.error {
+      color: #EE5C80;
+    }
+    &.black {
+      color: #222;
+    }
+    a {
+      color: rgba(55, 64, 89, 0.7);
+      text-decoration: underline;
+    }
+    &.nomargin {
+      margin-left: 0
+    }
+    &.left {
+      text-align: left;
     }
   }
-  .right-menu {
-    float: right;
-    font-size: 14px;
-    color: rgba(55, 64, 89, 0.8);
-    margin-top: 10px
+  .section-card {
+    background: none;
+    .card-title {
+      text-align: left;
+    }
   }
-
-}
-.main-content{
-  background-color: $mainBg;
-  margin-top: 86px;
-  padding-right: 360px;
-  min-height: 100%;
-}
-.sidebar-right {
-  position: fixed;
-  top: 86px;
-  right: 0;
-  width: 360px;
-  height: 100%;
-  background: #7B88FF;
 }
 
 
-
-// main card
+/* card style */
 .section-card {
   position: relative;
   padding: 30px;
   color: #374059;
+  background: #fff;
   .card-tool {
     position: absolute;
     top: 30px;
@@ -79,23 +58,12 @@
   }
   .card-content {
     position: relative;
-
   }
 }
 
 
 .section-user-info {
   display: flex;
-  .user-avatar {
-    width: 64px;
-    height: 64px;
-
-    img {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-    }
-  }
   .user-meta {
     margin: 10px 0 0 20px;
     .user-name {
@@ -110,23 +78,64 @@
   }
 
 }
+/* styles for user photo */
+.user-avatar {
+  width: 64px;
+  height: 64px;
 
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+}
 
+/* styles for social media */
 .socials {
   ul {
     list-style: none;
     margin-left: -40px;
     li {
-      float: left;
+      position: relative;
+
       display: inline-block;
       margin-right: 10px;
+      .remove {
+        position: absolute;
+        right: -4px;
+        top: 14px;
+        width: 1.2em;
+        height: 1.2em;
+        cursor: pointer;
+        z-index: 9999;
+      }
     }
   }
 }
+
+/* style for buttons */
 .btn-main {
   color: #fff;
   background: linear-gradient(270deg, #7B87FF 0%, #606FFF 100%);
   box-shadow: 0px 2px 10px rgba(123, 136, 255, 0.5);
+  &:hover, &:active, &:focus {
+    color: #fff;
+    background: linear-gradient(270deg, #6977FF 0%, #5364FF 100%);
+  }
+  &.disable {
+    background: rgb(182,189,248);
+    &:hover, &:active, &:focus {
+      color: #fff;
+      background: rgb(180,180,240);
+    }
+  }
+}
+.btn-wide {
+  width: 340px;
+}
+.btn-grey {
+  color: rgb(108, 116, 135);
+  background: rgb(235, 237, 245);
 }
 .el-button.is-plain.btn-link {
   color: #4987FF;
@@ -149,7 +158,8 @@
     background: #fff;
   }
 }
-// element-ui 组件样式覆盖
+
+/* element-ui style modification */
 .el-input.fake {
   font-weight: 500;
   &.textarea {
@@ -164,27 +174,20 @@ el-dialog__header, el-dialog__body, el-dialog__footer {
   padding-right: 30px;
 }
 
-
-.inner-content {
-  position: relative;
-  width: 552px;
-  max-width: 100%;
-  padding: 160px 35px 0;
-  margin: 0 auto;
-  overflow: hidden;
-  font-style: 12px;
-  color: rgba(55, 64, 89, 0.7);
-  line-height: 18px;
-  text-align: center;
-  .tip {
-    color: rgba(55, 64, 89, 0.4);
-  }
-  a.tip {
-    color: rgba(55, 64, 89, 0.7);
-  }
+/* style for iconfont */
+.icon {
+  width: 2em;
+  height: 2em;
+  vertical-align: -0.15em;
+  fill: currentColor;
 }
 
-
-.main-content {
-  background-color: $mainBg;
+/* other styles */
+@keyframes rotation {
+  0% {
+    transform: rotate(0)
+  }
+  100% {
+    transform: rotate(360deg)
+  }
 }

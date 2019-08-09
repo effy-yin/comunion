@@ -1,17 +1,18 @@
 <template>
   <div class="organization-list">
-    <main-header />
-
     <div class="card-wrapper main-content">
-      <el-card v-for="org in userList" :key="org.id" class="box-card">
+      <el-card v-for="org in orgList" :key="org.id" class="box-card">
         <div slot="header" class="clearfix">
           <div class="section-org-info">
-            <div class="org-avatar"><img src="~@/assets/avatar.png" alt=""></div>
-            <div class="org-name">{{ org.name }}</div>
+            <router-link :to="'/dao/info?id='+org._id">
+              <div class="org-avatar"><img src="~@/assets/avatar.png" alt=""></div>
+              <div class="org-name">{{ org.name }}</div>
+            </router-link>
           </div>
         </div>
-        <div class="org-desc">{{ org.wallet }}</div>
+        <div class="org-desc">{{ org.description }}</div>
       </el-card>
+      <el-card class="box-card fake" />
       <el-card class="box-card fake" />
       <el-card class="box-card fake" />
     </div>
@@ -19,74 +20,15 @@
 </template>
 
 <script>
-import MainHeader from '@/layout-main/main-header'
+import { getOrgList } from '@/api/organization'
 import { mapGetters } from 'vuex'
 
 export default {
-  components: {
-    MainHeader
-  },
   data() {
     return {
-      userList: [{
-        id: 1,
-        name: 'Robert Caroll',
-        title: 'UI Designer',
-        tags: 'UI,Web UX,UE,iOS',
-        email: 'effy@gmail.com',
-        wallet: 'Comunion is a decentralized autonomous organization collaboation network, helps companies, organization and individuals all around the world to create, manage and operate their own decentralized autonomous organization (The DAO).',
-        socials: ''
-      }, {
-        id: 2,
-        name: 'Robert Caroll',
-        title: 'UI Designer',
-        tags: 'UI,Web UX,UE,iOS',
-        email: 'effy@gmail.com',
-        wallet: 'Comunion is a decentralized autonomous organization collaboation network, helps companies, organization and individuals all around the world to create, manage and operate their own decentralized autonomous organization (The DAO).',
-        socials: ''
-      }, {
-        id: 3,
-        name: 'Robert Caroll',
-        title: 'UI Designer',
-        tags: 'UI,Web UX,UE,iOS',
-        email: 'effy@gmail.com',
-        wallet: 'Comunion is a decentralized autonomous organization collaboation network, helps companies, organization and individuals all around the world to create, manage and operate their own decentralized autonomous organization (The DAO).',
-        socials: ''
-      }, {
-        id: 4,
-        name: 'Robert Caroll',
-        title: 'UI Designer',
-        tags: 'UI,Web UX,UE,iOS',
-        email: 'effy@gmail.com',
-        wallet: 'Comunion is a decentralized autonomous organization collaboation network, helps companies, organization and individuals all around the world to create, manage and operate their own decentralized autonomous organization (The DAO).',
-        socials: ''
-      }, {
-        id: 5,
-        name: 'Robert Caroll',
-        title: 'UI Designer',
-        tags: 'UI,Web UX,UE,iOS',
-        email: 'effy@gmail.com',
-        wallet: 'Comunion is a decentralized autonomous organization collaboation network, helps companies, organization and individuals all around the world to create, manage and operate their own decentralized autonomous organization (The DAO).',
-        socials: ''
-      }, {
-        id: 6,
-        name: 'Robert Caroll',
-        title: 'UI Designer',
-        tags: 'UI,Web UX,UE,iOS',
-        email: 'effy@gmail.com',
-        wallet: '238dha87fhz9a09ildhahihhkzhe',
-        socials: ''
-      }, {
-        id: 7,
-        name: 'Robert Caroll',
-        title: 'UI Designer',
-        tags: 'UI,Web UX,UE,iOS',
-        email: 'effy@gmail.com',
-        wallet: '238dha87fhz9a09ildhahihhkzhe',
-        socials: ''
-      }],
+      orgList: [],
       form: {
-        name: 's'
+        name: ''
       },
       query: '',
       isInEdit: false,
@@ -99,8 +41,18 @@ export default {
       'name'
     ])
   },
+  created() {
+    this.getOrgList()
+  },
   methods: {
-
+    getOrgList() {
+      getOrgList().then(res => {
+        if (!res.err && res.entities) {
+          console.log(44, res)
+          this.orgList = res.entities
+        }
+      })
+    }
   }
 }
 </script>
@@ -111,7 +63,7 @@ export default {
       padding: 0 40px;
     }
     .card-wrapper {
-      padding-top: 116px;
+      padding-top: 80px;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-around;

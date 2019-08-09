@@ -1,37 +1,40 @@
 <template>
   <el-dialog
+    class="edit-user-dialog"
     title="Edit Memberships"
     :visible.sync="dialogVisible"
-    width="40%"
+    width="500px"
     :before-close="handleClose()"
   >
-    <el-form ref="form" :model="form">
+    <el-form ref="form">
 
       <el-form-item label="Profile Photo">
-        <el-input v-model="form.name" />
+        <div class="user-avatar"><img src="~@/assets/avatar.png" alt=""></div>
       </el-form-item>
-      <el-form-item label="email">
-        <div class="el-input fake">{{ form.name }}</div>
+      <el-form-item label="Email">
+        <div class="el-input fake">{{ user?user.email:'' }}</div>
       </el-form-item>
       <el-form-item label="Wallet Address">
-        <div class="el-input fake">{{ form.wallet }}</div>
+        <div v-for="wallet in user.wallet" :key="wallet.name" class="el-input fake">
+          {{ wallet.name?wallet.name.toUpperCase():'' }}  {{ wallet.value }}
+        </div>
       </el-form-item>
 
       <el-form-item label="Social Media">
-        <el-input v-model="form.socials" />
+        <el-input v-model="user.social" />
       </el-form-item>
 
       <el-form-item label="Role">
-        <el-input v-model="form.role" />
+        <el-input v-model="user.role" />
       </el-form-item>
       <el-form-item label="Description">
-        <el-input v-model="form.description" type="textarea" />
+        <el-input v-model="user.description" type="textarea" />
       </el-form-item>
 
     </el-form>
 
     <span slot="footer" class="dialog-footer">
-      <el-button class="btn-main" round @click="dialogVisible = false">Save</el-button>
+      <el-button class="btn-main" round @click="handleUserSave">Save</el-button>
     </span>
   </el-dialog>
 </template>
@@ -43,37 +46,39 @@ export default {
   },
   data() {
     return {
-      form: {
-        id: '',
+      user: {
         name: '',
-        wallet: '',
         email: '',
+        wallet: '',
+        socials: '',
         role: '',
-        description: '',
-        socials: ''
-
+        description: ''
       },
       dialogVisible: false
     }
   },
   methods: {
     init(user) {
+      console.log(user, 33)
+
       this.dialogVisible = this.visible
-      this.form.name = user.name
-      this.form.wallet = user.wallet
-      this.form.email = user.email
-      this.form.role = user.role
-      this.form.description = user.description
-      this.form.socials = user.socials
+      this.user = user
     },
     handleClose() {
       console.log('1')
+    },
+    handleUserSave() {
+      this.dialogVisible = false
     }
   }
 
 }
 </script>
 
-<style scoped>
-
+<style lang="scss">
+.edit-user-dialog {
+  .user-avatar {
+    margin-bottom: 20px;
+  }
+}
 </style>
