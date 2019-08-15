@@ -21,15 +21,15 @@
             <div class="org-name-check">
               <span v-if="isOrgNameInCheck" class="check" />
               <span v-else>
-                <svg v-show="orgForm.name && !isOrgNameInCheck && !isOrgNameExist" class="icon" aria-hidden="true">
+                <!-- <svg v-show="orgForm.name && !isOrgNameInCheck && !isOrgNameExist" class="icon" aria-hidden="true" @click="handleDelOrgName">
                   <use xlink:href="#icon-minus" />
-                </svg>
+                </svg> -->
                 <svg v-show="orgForm.name && !isOrgNameInCheck && isOrgNameExist" class="icon" aria-hidden="true">
                   <use xlink:href="#icon-check" />
                 </svg>
               </span>
             </div>
-            <div v-if="!orgForm.name" class="tip">Please input your organization name</div>
+            <div v-if="!orgForm.name || !orgForm.name.replace(/(^\s*)|(\s*$)/g, '')" class="tip">Please input your organization name</div>
             <div v-else>
               <div v-show="!isOrgNameInCheck && isOrgNameExist" class="tip">Organization name exists. You can open it</div>
               <div v-show="!isOrgNameInCheck && !isOrgNameExist" class="tip error">Organization name doesn't exist. You can create a new decentralized organization.</div>
@@ -59,8 +59,16 @@ export default {
   },
   watch: {
     'orgForm.name': function(newVal, oldVal) {
-      this.isOrgNameInCheck = true
-      this.debouncedCheckOrgName()
+      const name = newVal.replace(/(^\s*)|(\s*$)/g, '')
+
+      if (name.length === 0) {
+        this.isOrgNameInCheck = false
+        this.isOrgNameExist = false
+      }
+      if (name.length > 0 && name !== oldVal.replace(/(^\s*)|(\s*$)/g, '')) {
+        this.isOrgNameInCheck = true
+        this.debouncedCheckOrgName()
+      }
     }
   },
   created() {
@@ -68,23 +76,21 @@ export default {
   },
   methods: {
     checkOrgName() {
-      this.orgForm.name = this.orgForm.name.replace(/^\s*|\s*$/, '')
-      if (this.orgForm.name) {
-        console.log('check')
+      const name = this.orgForm.name.replace(/(^\s*)|(\s*$)/g, '')
+      if (name.length > 0) {
         this.isOrgNameInCheck = true
-        checkOrgName(this.orgForm.name).then(res => {
+        checkOrgName(name).then(res => {
           if (res.entity) {
-            console.log('组织名称已存在')
             this.isOrgNameExist = true
             this.orgForm._id = res.entity._id
           } else {
-            console.log('组织名称可用')
             this.isOrgNameExist = false
-            // this.curStep = 'step2'
           }
           this.isOrgNameInCheck = false
         })
       } else {
+        this.isOrgNameExist = false
+        this.isOrgNameInCheck = false
       }
     },
     openOrg() {
@@ -92,6 +98,10 @@ export default {
         this.$router.push(`/dao/info?id=${this.orgForm._id}`)
       }
     }
+    // handleDelOrgName() {
+    //   this.isOrgNameInCheck = false
+    //   this.orgForm.name = ''
+    // }
   }
 }
 </script>

@@ -16,6 +16,14 @@ export function updateOrgInfo(_id, data) {
   })
 }
 
+export function updateOrgMember(data) {
+  return request({
+    url: `/a/update/org`,
+    method: 'post',
+    data
+  })
+}
+
 export function getOrgList() {
   return request({
     url: '/r/org',

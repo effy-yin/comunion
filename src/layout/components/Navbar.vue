@@ -11,12 +11,14 @@
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <!--          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">-->
-          <img v-if="token" src="~@/assets/avatar.png?imageView2/1/w/80/h/80" class="user-avatar">
-          <img v-else src="~@/assets/avatar-default.png" class="user-avatar">
+          <!-- <img v-if="token" src="~@/assets/avatar.png?imageView2/1/w/80/h/80" class="user-avatar"> -->
+          <img v-if="userInfo._id&&userInfo.logo" :src="userInfo.logo?userInfo.logo:'~@/assets/avatar.png'" class="user-avatar">
+          <img v-if="userInfo._id&&!userInfo.logo" src="~@/assets/avatar.png" class="user-avatar">
+          <img v-if="!(userInfo._id)" src="~@/assets/avatar.png" class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <template v-if="!token">
+          <template v-if="!(userInfo._id)">
             <el-dropdown-item @click.native="isDialogVisible=true;curType='login'">
               Please Log in First
             </el-dropdown-item>
@@ -63,9 +65,9 @@
         <el-form-item label="Email">
           <el-input v-model="registerForm.email" placeholder="Please input your email" />
         </el-form-item>
-        <el-form-item label="code" class="code">
+        <el-form-item label="Code" class="code">
 
-          <el-input v-model="registerForm.code" placeholder="Please input verification code" />
+          <el-input v-model="registerForm._vCode" placeholder="Please input verification code" />
           <el-button type="primary btn-main" round @click="handleSendCode">Send Verificatiob Code</el-button>
 
         </el-form-item>
@@ -75,14 +77,14 @@
       </el-form>
 
       <div v-show="curType==='login'" slot="footer" class="dialog-footer">
-        <span @click="curType='reset'">forget password</span>
+        <span class="forget" @click="curType='reset'">forget password</span>
         <el-button type="primary btn-main" round @click="handleLogin">Log in</el-button>
       </div>
       <div v-show="curType==='register'" slot="footer" class="dialog-footer">
-        <el-button type="primary btn-main" round @click="handleLogin">Register</el-button>
+        <el-button type="primary btn-main" round @click="handleRegister">Register</el-button>
       </div>
       <div v-show="curType==='reset'" slot="footer" class="dialog-footer">
-        <el-button type="primary btn-main" round @click="handleLogin">Reset Password</el-button>
+        <el-button type="primary btn-main" round @click="handleResetPwd">Reset Password</el-button>
       </div>
     </el-dialog>
   </div>
@@ -92,7 +94,7 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
-import { userRegister, sendVeriCode } from '@/api/user'
+import { userRegister, sendVeriCode, resetPwd } from '@/api/user'
 
 export default {
   components: {
@@ -107,9 +109,10 @@ export default {
       },
       registerForm: {
         email: '',
-        code: '',
         password: '',
-        afterSave: 'sendPsdEmail'
+        _cCode: '',
+        _vCode: '',
+        username: ''
       },
       // resetForm: {
       //   email: '',
@@ -134,11 +137,11 @@ export default {
     ])
   },
   created() {
-    if (!this.userInfo._id) {
-      if (this.token) {
-        this.$store.dispatch('user/getInfo')
-      }
-    }
+    // if (!this.userInfo._id) {
+    //   if (this.token) {
+    //     this.$store.dispatch('user/getInfo')
+    //   }
+    // }
   },
   methods: {
     toggleSideBar() {
@@ -149,30 +152,64 @@ export default {
       // this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     },
     handleLogin() {
-      console.log(1, this.loginForm)
       this.$store.dispatch('user/login', this.loginForm).then(data => {
-        console.log(data)
-        if (data === 'success') {
-          this.logInDialogVisible = false
+        if (!data.err) {
+          this.isDialogVisible = false
+          this.$router.push('/dao/profile')
         } else {
           this.$notify({
-            message: data,
+            message: data.msg,
             type: 'warning'
           })
         }
       })
     },
     handleRegister() {
+      const index = this.registerForm.email.indexOf('@')
+      if (index !== -1) {
+        this.registerForm.username = this.registerForm.email.substr(0, index)
+      } else {
+        this.$notify({
+          message: 'Please input corrent email!',
+          type: 'warning'
+        })
+      }
+
       userRegister(this.registerForm).then(res => {
-        if (!res.err && res.entities) {
-          console.log(44, res)
-          this.orgList = res.entities
+        if (!res.err) {
+          // this.orgList = res.entities
+          this.$notify({
+            message: 'register success',
+            type: 'success'
+          })
+          this.isDialogVisible = false
+        } else {
+          this.$notify({
+            message: res.msg,
+            type: 'warning'
+          })
+        }
+      })
+    },
+    handleResetPwd() {
+      resetPwd(this.registerForm).then(res => {
+        if (!res.err) {
+          this.$notify({
+            message: 'reset password success!',
+            type: 'success'
+          })
+          this.isDialogVisible = false
+        } else {
+          this.$notify({
+            message: res.msg,
+            type: 'warning'
+          })
         }
       })
     },
     handleSendCode() {
       sendVeriCode({ email: this.registerForm.email }).then(res => {
-        console.log(res)
+        this.registerForm._cCode = res.cCode
       })
     }
   }
@@ -267,6 +304,13 @@ export default {
   }
   .dialog-footer {
     height: 40px;
+    .forget {
+      position: relative;
+      top: 3px;
+      font-size: 14px;
+      color:#7B88FF;
+      cursor: pointer
+    }
   }
   .el-form-item {
     margin-bottom: 0;
@@ -276,7 +320,7 @@ export default {
       float: none;
     }
     .el-input {
-      width: 254px;
+      width: 228px;
     }
   }
 }

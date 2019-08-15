@@ -20,11 +20,11 @@
                   <svg v-show="orgForm.name && !isOrgNameInCheck && isOrgNameValid" class="icon" aria-hidden="true">
                     <use xlink:href="#icon-check" />
                   </svg>
-                  <svg v-show="orgForm.name && !isOrgNameInCheck && !isOrgNameValid" class="icon" aria-hidden="true">
+                  <!-- <svg v-show="orgForm.name && !isOrgNameInCheck && !isOrgNameValid" class="icon" aria-hidden="true">
                     <use xlink:href="#icon-minus" />
-                  </svg>
+                  </svg> -->
                 </div>
-                <div v-if="!orgForm.name" class="tip">Please input your organization name</div>
+                <div v-if="!orgForm.name || !orgForm.name.replace(/(^\s*)|(\s*$)/g, '')" class="tip">Please input your organization name</div>
                 <div v-else>
                   <div v-show="!isOrgNameInCheck && isOrgNameValid" class="tip">Organization name does not exist</div>
                   <div v-show="!isOrgNameInCheck && !isOrgNameValid" class="tip error">Organization name already exists</div>
@@ -57,6 +57,7 @@
                   <el-form-item label="Organization Logo" prop="logo">
                     <el-upload
                       action="/comunion-api/a/upload"
+                      name="upload"
                       list-type="picture-card"
                       :on-change="handleFileChange"
                       :multiple="false"
@@ -243,13 +244,13 @@ export default {
         ]
       },
       orgTypeList: [{
-        value: 1,
+        value: 'Business',
         label: 'Business'
       }, {
-        value: 2,
+        value: 'School',
         label: 'School'
       }, {
-        value: 3,
+        value: 'Personal',
         label: 'Personal'
       }],
       socialList: ['twitter', 'facebook', 'instagram', 'youtube'],
@@ -285,11 +286,18 @@ export default {
   },
   watch: {
     'orgForm.name': function(newVal, oldVal) {
-      this.isOrgNameInCheck = true
-      this.debouncedCheckOrgName()
+      const name = newVal.replace(/(^\s*)|(\s*$)/g, '')
+
+      if (name.length === 0) {
+        this.isOrgNameInCheck = false
+        this.isOrgNameValid = false
+      }
+      if (name.length > 0 && name !== oldVal.replace(/(^\s*)|(\s*$)/g, '')) {
+        this.isOrgNameInCheck = true
+        this.debouncedCheckOrgName()
+      }
     },
     'orgForm.type': function(newVal, oldVal) {
-      console.log(newVal, 'type')
       if (newVal) {
         this.isInfo1Valid = true
       }
@@ -302,27 +310,28 @@ export default {
     }
   },
   created() {
-    console.log(123123, this.$store.getters)
     this.checkMetaMaskInstall()
     this.debouncedCheckOrgName = _.debounce(this.checkOrgName, 500)
   },
   methods: {
     checkOrgName() {
-      this.orgForm.name = this.orgForm.name.replace(/^\s*|\s*$/, '')
-      if (this.orgForm.name) {
+      const name = this.orgForm.name.replace(/(^\s*)|(\s*$)/g, '')
+      if (name.length > 0) {
         console.log('check')
         this.isOrgNameInCheck = true
-        checkOrgName(this.orgForm.name).then(res => {
+        checkOrgName(name).then(res => {
           if (res.entity) {
             console.log('组织名称已存在')
             this.isOrgNameValid = false
           } else {
             console.log('组织名称可用')
             this.isOrgNameValid = true
-            // this.curStep = 'step2'
           }
           this.isOrgNameInCheck = false
         })
+      } else {
+        this.isOrgNameValid = false
+        this.isOrgNameInCheck = false
       }
     },
     checkInfo1() {
@@ -417,7 +426,6 @@ export default {
                 this.orgForm.transactionHash = data
 
                 console.log('transaction hash', data)
-                console.log('new org: ', this.orgForm)
                 const _this = this
                 const timer = setInterval(function() {
                   if (_this.percentage < 90) {
@@ -427,7 +435,6 @@ export default {
                   }
                 }, 2000)
                 this.$store.dispatch('organization/newOrg', this.orgForm).then((res) => {
-                  console.log(123, res)
                   if (res === 'success') {
                     this.isCreateSuccess = true
                   }
@@ -470,7 +477,7 @@ export default {
       document.querySelector('.el-upload--picture-card').style.visibility = 'visible'
     },
     handleUploadSuccess(response, file, fileList) {
-      console.log(123, response, file, fileList)
+      this.orgForm.logo = response.url
     },
     addSocial() {
       this.orgForm.social.push({
@@ -492,9 +499,7 @@ export default {
       if (window.web3 || window.ethereum) {
         // Use the browser's ethereum provider
         this.isMetaMaskInstalled = true
-        console.log('old web3', web3)
         web3 = new Web3(web3.currentProvider)
-        console.log('new web3', web3)
         /* To see if the injected provider is from MetaMask */
         if (web3.currentProvider.isMetaMask) {
           console.log('The injected provider is from MetaMask！')
@@ -551,14 +556,13 @@ export default {
       // var result = greeter2.greet();
       // console.log(result);
       hello.say(err => {
-        console.log(123)
+        console.log(err)
       })
       hello.say().call(err => {
-        console.log(456)
+        console.log(err)
       })
     },
     handleGetStart() {
-      console.log(this.orgId, 8989)
       this.$router.push(`/dao/info/${this.orgId}`)
     }
   }

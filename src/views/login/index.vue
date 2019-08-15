@@ -59,12 +59,12 @@
 </template>
 
 <script>
-import mainHeader from '@/components/main-header'
+import MainHeader from '@/components/MainHeader'
 import { validUsername } from '@/utils/validate'
 
 export default {
   name: 'Login',
-  components: { mainHeader },
+  components: { MainHeader },
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {

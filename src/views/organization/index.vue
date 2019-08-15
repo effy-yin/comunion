@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import mainHeader from '@/components/main-header'
+import mainHeader from '@/components/MainHeader'
 
 export default {
   name: 'Login',

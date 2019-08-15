@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    :title="add?'Add Address':'Edit Address'"
+    :title="isNew?'Add Address':'Edit Address'"
     :visible.sync="show"
     width="40%"
     :before-close="handleClose"
@@ -24,10 +24,10 @@
 
       </el-form-item>
       <el-form-item label="Wallet Address">
-        <el-input v-model="form.address" />
+        <el-input v-model="form.address" placeholder="Wallet Address" />
       </el-form-item>
       <el-form-item label="Usage">
-        <el-input v-model="form.usage" />
+        <el-input v-model="form.usage" placeholder="Usage" />
       </el-form-item>
     </el-form>
 
@@ -38,30 +38,32 @@
 </template>
 
 <script>
+
 export default {
   data() {
     return {
-      add: true,
       form: {
+        _id: '',
         name: '',
         address: '',
         usage: ''
       },
-      show: false
+      show: false,
+      isNew: false
     }
   },
   methods: {
-    init(show, add, wallet) {
+    init(show, isNew, wallet) {
       this.show = show
-      this.add = add
+      this.isNew = isNew
       if (wallet) {
-        console.log('wallet', wallet)
+        this.form._id = wallet._id
         this.form.name = wallet.name
         this.form.address = wallet.address
         this.form.usage = wallet.usage
       } else {
-        console.log(this.$refs.form)
         // this.$refs.walletForm.resetFields()
+        this.form._id = ''
         this.form.name = ''
         this.form.address = ''
         this.form.usage = ''
@@ -71,8 +73,19 @@ export default {
       this.show = false
     },
     handleSave() {
-      this.$emit('save-wallet', this.form)
-      this.show = false
+      const addressReg = /^(0x)(\d|\w){40}/i
+      if (!addressReg.test(this.form.address)) {
+        this.$notify({
+          message: 'Please input valid wallet address',
+          type: 'warning'
+        })
+      } else {
+        if (this.isNew) {
+          this.form._id = Date.now().toString(36)
+        }
+        this.$emit('saveWallet', this.form, this.isNew)
+        this.show = false
+      }
     }
   }
 

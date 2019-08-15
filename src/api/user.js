@@ -59,3 +59,11 @@ export function sendVeriCode(data) {
     data
   })
 }
+
+export function resetPwd(data) {
+  return request({
+    url: '/a/auth/resetPsd',
+    method: 'post',
+    data
+  })
+}

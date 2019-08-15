@@ -1,85 +1,30 @@
 <template>
   <div class="team-manager">
     <div class="search-row">
-      <el-button class="btn-main" round @click="handleAddClick">
+      <el-button class="btn-main" round @click="handleClickAdd">
         Add Member
       </el-button>
-
-      <el-input v-model="query" placeholder="Enter a member's email address or wallet address to search for members" class="input-with-select">
+      <!-- <el-input v-model="query" placeholder="Enter a member's email address or wallet address to search for members" class="input-with-select">
         <el-button slot="prepend" icon="el-icon-search" />
-      </el-input>
+      </el-input> -->
     </div>
 
     <el-form v-if="orgForm.members.length > 0" ref="form">
       <div class="card-wrapper">
-
-        <el-card v-for="user in orgForm.members" :key="user.id" class="box-card">
-
-          <div slot="header" class="clearfix">
-
-            <svg class="icon tool" aria-hidden="true" type="text" @click="showEditDialog(user)">
-              <use xlink:href="#icon-edit" />
-            </svg>
-            <svg class="icon tool" aria-hidden="true" type="text" @click="handleDelete(user)">
-              <use xlink:href="#icon-delete" />
-            </svg>
-
-            <div class="section-user-info">
-              <div class="user-avatar"><img src="~@/assets/avatar.png" alt=""></div>
-              <div class="user-meta">
-                <div class="user-name">{{ user.name }}</div>
-                <div class="user-title">{{ user.title }}</div>
-              </div>
-            </div>
-            <div class="tag-row">
-              <el-tag type="success">UI</el-tag>
-              <el-tag type="success">UI</el-tag>
-              <el-tag type="success">UI</el-tag>
-            </div>
-
-          </div>
-          <div>
-            <el-form-item label="E-Mail">
-              <div class="el-input fake">{{ user.email }}</div>
-            </el-form-item>
-            <el-form-item label="Wallet Address">
-              <div class="el-input fake">{{ user&&user.wallet&&user.wallet.address?user.wallet.address:'' }}</div>
-            </el-form-item>
-            <div class="socials el-input fake">
-              <ul>
-                <li><svg class="icon" aria-hidden="true">
-                  <use xlink:href="#icon-twitter" />
-                </svg></li>
-                <li><svg class="icon" aria-hidden="true">
-                  <use xlink:href="#icon-instagram" />
-                </svg></li>
-                <li><svg class="icon" aria-hidden="true">
-                  <use xlink:href="#icon-facebook" />
-                </svg></li>
-                <li><svg class="icon" aria-hidden="true">
-                  <use xlink:href="#icon-youtube" />
-                </svg></li>
-              </ul>
-            </div>
-          </div>
-        </el-card>
+        <user-card v-for="user in orgForm.members" :key="user._id" :user="user" :editible="true" @editUser="handleEditMember" @deleteUser="handleDeleteMember" />
         <el-card class="box-card fake" />
         <el-card class="box-card fake" />
       </div>
-
     </el-form>
-
-    <div class="no-member">
+    <div v-else class="no-member">
       Click Add Menber to add members
     </div>
-
-    <add-update-dialog ref="editDialog" :user="curUser" :visible="isDialogEditVisible" />
 
     <el-dialog
       ref="addDialog"
       title="Add Members"
       :visible.sync="isDialogAddVisible"
-      width="500px"
+      width="520px"
       :before-close="handleClose"
     >
       <div>
@@ -88,87 +33,45 @@
           class="search-email-input"
           placeholder="Enter a member's email address"
           prefix-icon="el-icon-search"
-        /><el-button type="primary btn-main" round @click="handleUserSearch">Search</el-button>
+        />
+        <el-button type="primary btn-main" round @click="handleSearchUser">Search</el-button>
       </div>
-
-      <!--      <span slot="footer" class="dialog-footer">-->
-      <!--        <el-button type="primary btn-main" round @click="handleUserSearch">Search</el-button>-->
-      <!--      </span>-->
-
-      <div v-show="isUserExist" class="search-result">
-        <el-form ref="form" :model="searchUser">
-          <el-card class="box-card">
-
-            <div slot="header" class="clearfix">
-
-              <div class="section-user-info">
-                <div class="user-avatar"><img src="~@/assets/avatar.png" alt=""></div>
-                <div class="user-meta">
-                  <div class="user-name">{{ searchUser&&searchUser.name?searchUser.name :'' }}</div>
-                  <div class="user-title">{{ searchUser&&searchUser.title?searchUser.title:'' }}</div>
-                </div>
-              </div>
-              <div class="tag-row">
-                <el-tag type="success">UI</el-tag>
-                <el-tag type="success">UI</el-tag>
-                <el-tag type="success">UI</el-tag>
-              </div>
-
-            </div>
-            <div>
-              <el-form-item label="E-Mail">
-                <div class="el-input fake">{{ searchUser&& searchUser.email?searchUser.email:'' }}</div>
-              </el-form-item>
-              <el-form-item label="Wallet Address">
-                <div class="el-input fake">{{ searchUser&&searchUser.address?searchUser.address:'' }}</div>
-              </el-form-item>
-              <div class="socials el-input fake">
-                <ul>
-                  <li><svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-twitter" />
-                  </svg></li>
-                  <li><svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-instagram" />
-                  </svg></li>
-                  <li><svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-facebook" />
-                  </svg></li>
-                  <li><svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-youtube" />
-                  </svg></li>
-                </ul>
-              </div>
-            </div>
-          </el-card>
-        </el-form>
-        <el-button type="primary btn-main" round @click="handleAddMember">Add</el-button>
+      <div v-show="!isUserExist" class="no-tip">Can't find user {{ searchEmail }}</div>
+      <div v-if="searchUser" class="search-result">
+        <user-card :user="searchUser" :editible="false" />
+        <el-button type="primary btn-main btn-wide" round @click="handleAddMember">Add</el-button>
       </div>
     </el-dialog>
+
+    <add-update-dialog ref="editDialog" :user="curUser" :visible="isDialogEditVisible" @saveUser="handleSaveMember" />
   </div>
 </template>
 
 <script>
-import { getOrgInfo, updateOrgInfo, checkOrgEmail } from '@/api/organization'
 import { getUserInfoByEmail } from '@/api/user'
 import { mapGetters } from 'vuex'
 import AddUpdateDialog from './dialog-update'
-
+import UserCard from '@/components/UserCard'
+import { getCurOrgId, setCurOrgId } from '@/utils/auth'
+import { updateOrgMember } from '@/api/organization'
 export default {
-  components: { AddUpdateDialog },
+  components: { AddUpdateDialog, UserCard },
   data() {
     return {
-      // userList: [],
-      query: '',
-      isDialogEditVisible: false,
-      isDialogAddVisible: false,
+      isOwner: false,
+      isUserExist: true,
       searchEmail: '',
       searchUser: null,
-      isUserExist: false,
+      isDialogEditVisible: false,
+      isDialogAddVisible: false,
+
       curUser: null
     }
   },
   computed: {
     ...mapGetters([
+      'token',
+      'userInfo',
       'orgForm'
     ])
   },
@@ -177,35 +80,70 @@ export default {
   },
   methods: {
     getOrgInfo() {
-      const id = this.$route.query.id
-      if (id) {
-        this.$store.dispatch('organization/getOrgInfo', id)
+      console.log(123, this.orgForm._id)
+
+      console.log('!')
+      let id = ''
+      if (this.$route.query.id) {
+        id = this.$route.query.id
+        setCurOrgId(id)
       } else {
-        if (!this.orgForm._id) {
-          this.$notify({
-            message: 'Please select an organization to continue!',
-            type: 'warning'
-          })
-        }
+        id = getCurOrgId()
+      }
+      console.log('id', id)
+      if (id) {
+        this.$store.dispatch('organization/getOrgInfo', id).then(res => {
+          console.log(0, this.token, this.userInfo.orgs)
+
+          if (this.token) {
+            console.log(111)
+            if (this.userInfo) {
+              console.log(222)
+              if (this.userInfo.orgs[0] && this.userInfo.orgs[0]._id === getCurOrgId()) {
+                this.isOwner = true
+              }
+            } else {
+              console.log(333)
+              this.$store.dispatch('user/getInfo').then(res => {
+                if (this.userInfo.orgs[0] && this.userInfo.orgs[0]._id === getCurOrgId()) {
+                  this.isOwner = true
+                }
+              })
+            }
+          }
+          console.log('isowner', this.isOwner)
+        })
+      } else {
+        this.$notify({
+          message: 'Please select an organization to continue!',
+          type: 'warning'
+        })
       }
     },
-    handleUserSearch() {
+    handleSearchUser() {
       // this.isDialogAddVisible = false
       getUserInfoByEmail(this.searchEmail).then(res => {
         console.log(res)
         if (res.entity) {
-          this.isUserExist = true
+          this.searchEmail = ''
           this.searchUser = res.entity
+          this.isUserExist = true
         } else {
           this.isUserExist = false
         }
       })
     },
     handleAddMember() {
-      this.$store.dispatch('organization/addOrgMember', this.searchUser).then(res=>{
+      const member = {
+        _id: this.searchUser._id,
+        email: this.searchUser.email
+      }
+      this.$store.dispatch('organization/addOrgMember', member).then(res => {
         console.log(res)
         if (res === 'success') {
           this.isDialogAddVisible = false
+
+          this.searchUser = null
         } else {
           this.$notify({
             message: res,
@@ -213,27 +151,78 @@ export default {
           })
         }
       })
+    },
+    handleEditMember(user) {
+      if (this.isOwner) {
+        this.isDialogEditVisible = true
+        this.$refs.editDialog.init(user)
+      } else {
+        this.$notify({
+          message: 'Please log in to edit member!',
+          type: 'warning'
+        })
+      }
+    },
+    handleDeleteMember(email) {
+      if (this.isOwner) {
+        this.$store.dispatch('organization/deleteOrgMember', email).then(res => {
+          console.log(res)
+        // if (res === 'success') {
+        //   this.isDialogAddVisible = false
+        // } else {
+        //   this.$notify({
+        //     message: res,
+        //     type: 'warning'
+        //   })
+        // }
+        })
+      } else {
+        this.$notify({
+          message: 'Please log in to delete member!',
+          type: 'warning'
+        })
+      }
+    },
 
+    handleSaveMember(user) {
+      const data = {
+        q: {
+          _id: this.orgForm._id,
+          'members.email': user.email
+        },
+        op: {
+          role: user.role,
+          description: user.description
+        }
+      }
+      updateOrgMember(data).then(res => {
+        console.log(123, data, res)
+
+        this.$store.dispatch('organization/getOrgInfo', this.orgForm._id)
+      })
     },
-    showEditDialog(user) {
-      this.isDialogEditVisible = true
-      this.$refs.editDialog.init(user)
-    },
-    handleDelete(user) {
-      alert('de')
-    },
-    handleAddClick() {
+    handleClickAdd() {
       // this.$router.push('/team-manager/profile')
-      this.isDialogAddVisible = true
+      if (this.isOwner) {
+        this.isDialogAddVisible = true
+      } else {
+        this.$notify({
+          message: 'Please log in to add member!',
+          type: 'warning'
+        })
+      }
     },
     handleClose() {
       this.isDialogAddVisible = false
+      this.searchEmail = ''
+      this.searchUser = null
+      this.isUserExist = true
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   .team-manager {
     padding: 30px;
     .search-row {
@@ -248,6 +237,9 @@ export default {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-around;
+      .box-card.fake {
+        visibility: hidden;
+      }
     }
 
     .search-email-input {
@@ -260,27 +252,17 @@ export default {
       color: #45588C;
       margin-top: calc(20%);
     }
-    .icon.tool {
-      float: right; padding: 3px 0;
-      cursor: pointer;
+    .no-tip {
+      margin-top: 20px;
     }
-    .box-card {
-      color: #374059;
-      width: 346px;
-      margin-bottom: 30px;
-      &.fake {
-        visibility: hidden;
-      }
-    }
-
     .search-result {
       margin-top: 20px;
-      .box-card {
-        margin: 0 auto
+      /deep/ .box-card {
+        margin: 30px auto 10px auto;
       }
       .btn-main {
         position: relative;
-        left: calc(50% - 26px);
+        left: calc(50% - 170px);
         margin-top: 20px;
       }
     }

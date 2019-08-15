@@ -1,17 +1,19 @@
 // import { login, logout, getInfo } from '@/api/user'
 import { login, logout, getInfo, update } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
-import { resetRouter } from '@/router'
+// import { resetRouter } from '@/router'
 
 const state = {
   token: getToken(),
   _id: '',
   email: '',
-  orgs: [],
   name: '',
+  logo: '',
+
   wallet: [],
   social: [],
-  tags: []
+  skills: [],
+  orgs: []
 }
 
 const mutations = {
@@ -21,12 +23,13 @@ const mutations = {
   SET_INFO: (state, userInfo) => {
     state._id = userInfo._id
     state.email = userInfo.email
-    state.orgs = userInfo.orgs || []
-
     state.name = userInfo.name || ''
+    state.logo = userInfo.logo
+
     state.wallet = userInfo.wallet || []
     state.social = userInfo.social || []
-    state.tags = userInfo.tags || []
+    state.skills = userInfo.skills || []
+    state.orgs = userInfo.orgs || []
   }
 }
 
@@ -38,15 +41,18 @@ const actions = {
       login(userInfo).then(response => {
         // commit('SET_TOKEN', data.token)
         // setToken(data.token)
+
         if (!response.err) {
           commit('SET_TOKEN', response.user._id)
           setToken(response.user._id)
           commit('SET_INFO', response.user)
-          resolve('success')
         } else {
-          console.log(response.msg)
-          resolve(response.msg)
+          console.log('login error', response.msg)
+          commit('SET_TOKEN', '')
+          setToken('')
+          commit('SET_INFO', {})
         }
+        resolve(response)
       }).catch(error => {
         reject(error)
       })
@@ -95,7 +101,10 @@ const actions = {
       // }).catch(error => {
       //   reject(error)
       // })
+
       commit('SET_TOKEN', '')
+      setToken('')
+      commit('SET_INFO', {})
       resolve()
     })
   },
